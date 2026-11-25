@@ -1,8 +1,0 @@
-class card:
-    def __init__(self, number, suit):
-        self.number = number
-        self.suit = suit
-
-ace_spades = card(1, "spade")
-print(ace_spades.suit)
-
