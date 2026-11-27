@@ -27,6 +27,10 @@ class State:
         self.winner = winner
 
 def new_game(num_players):
+    if num_players not in range(2,5):
+        print("must be between 2 - 4 players")
+        return
+    
     players = []
     for i in range(num_players):
         players.append(Player())
@@ -34,6 +38,7 @@ def new_game(num_players):
     full_deck = Deck()
     full_deck.reset_full()
     full_deck.shuffle()
+
     face_downs = full_deck.deal(num_players, 3)
     for i in range(len(players)):
         players[i].face_down = face_downs[i]
