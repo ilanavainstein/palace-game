@@ -5,12 +5,11 @@ def test_full_deck_52_cards():
     deck.reset_full()
     assert len(deck) == 52
 
-# draw
 def test_draw_shrinks():
     deck = Deck()
     deck.reset_full()
     length = len(deck)
-    card = deck.draw()
+    deck.draw()
     new_length = len(deck)
     assert length == new_length+1
 
@@ -20,7 +19,21 @@ def test_draw_returns_card():
     card = deck.draw()
     assert isinstance(card,Card)
 
-#add
+def test_draw_card():
+    deck = Deck()
+    deck.reset_full()
+    card = deck.draw(Card(3,"spades"))
+    assert card == Card(3,"spades")
+    assert len(deck) == 51
+
+def test_draw_deck():
+    deck = Deck()
+    deck.reset_full()
+    draw = deck.draw(Deck([Card(3,"spades"),Card(3,"clubs")]))
+    assert len(deck) == 50
+    assert len(draw) == 2
+    assert Card(3,"spades") in draw.cards and Card(3,"clubs") in draw.cards
+
 def test_add_deck():
     deck = Deck()
     cards = Deck()
@@ -30,7 +43,6 @@ def test_add_deck():
     deck.add(cards)
     assert deck.cards[-1].number == 11
 
-#deal
 def test_deal_num_cards():
     deck = Deck()
     deck.reset_full()
@@ -48,7 +60,6 @@ def test_correct_length():
     deck.reset_full()
     assert len(deck) == len(deck.cards)
 
-#value
 def test_value_full():
     deck = Deck()
     deck.reset_full()
@@ -56,7 +67,7 @@ def test_value_full():
     value = deck.value
     card = deck.cards[-1]
     while card.number == 9:
-        draw = deck.draw()
+        deck.draw()
         card = deck.cards[-1]
     if card.number in (2,10):
         assert value == 0
@@ -73,28 +84,29 @@ def test_value_add():
     assert deck.value == 5
 
 def test_value_nine():
-    deck = Deck()
-    deck.add(Card(5,"hearts"))
-    deck.add(Card(9,"hearts"))
-    deck.add(Card(9,"spades"))
+    deck = Deck(cards=[Card(5,"hearts"),Card(9,"hearts"),Card(9,"spades")])
     assert deck.value == 5
 
 def test_value_all_nines():
-    deck = Deck()
-    deck.add(Card(9,"hearts"))
-    deck.add(Card(9,"spades"))
+    deck = Deck(cards=[Card(9,"hearts"),Card(9,"spades")])
     assert deck.value == 0
 
 def test_value_ten_nine():
-    deck = Deck()
-    deck.add(Card(10,"hearts"))
-    deck.add(Card(9,"spades"))
+    deck = Deck(cards=[Card(10,"hearts"),Card(9,"spades")])
     assert deck.value == 0
 
 def test_value_draw():
-    deck = Deck()
-    deck.add(Card(5,"hearts"))
-    deck.add(Card(6,"spades"))
+    deck = Deck(cards=[Card(5,"hearts"),Card(6,"spades")])
     deck.draw()
     assert deck.value == 5
 
+def test_repeats():
+    deck = Deck(cards=[Card(5,"hearts")])
+    deck.add(Card(6,"spades"))
+    deck.add(Card(6,"clubs"))
+    deck.add(Card(6,"hearts"))
+    assert deck.repeats == 2
+
+def test_repeats_end():
+    deck = Deck(cards=[Card(6,"spades"),Card(6,"hearts"),Card(5,"hearts")])
+    assert deck.repeats == 0
