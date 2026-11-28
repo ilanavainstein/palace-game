@@ -45,17 +45,19 @@ class Deck:
 
 
     def add(self, card):
+        if len(self) == 0: top = 0
+        else: top = self.cards[-1].number
         if isinstance(card, Card):
             self.cards.append(card)
-            if self.value != 0 and self.value == card.number:
+            if top not in (0,2,10) and top == card.number:
                 self.repeats = self.repeats + 1
             else:
                 self.repeats = 0
         elif isinstance(card, Deck):
             for i in card.cards:
                 self.cards.append(i)
-            for i in reversed(card.cards):
-                if self.value != 0 and self.value == i.number:
+            for i in card.cards:
+                if top not in (0,2,10) and top == i.number:
                     self.repeats += 1
                 else:
                     break
@@ -93,3 +95,11 @@ class Deck:
                 if card.number not in (2,10):
                     self.value = card.number
                 break
+
+    def __eq__(self, other): # checks of two Decks with unique cards have the same cards
+        if len(self) != len(other):
+            return False
+        for card in self.cards:
+            if card not in other.cards:
+                return False
+        return True

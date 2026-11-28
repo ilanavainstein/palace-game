@@ -110,3 +110,12 @@ def test_repeats():
 def test_repeats_end():
     deck = Deck(cards=[Card(6,"spades"),Card(6,"hearts"),Card(5,"hearts")])
     assert deck.repeats == 0
+
+def test_deck_eq():
+    deck1 = Deck(cards=[Card(6,"spades"),Card(6,"hearts"),Card(5,"hearts")])
+    deck2 = Deck(cards=[Card(6,"spades"),Card(6,"hearts"),Card(5,"hearts")])
+    deck3 = Deck(cards=[Card(6,"hearts"),Card(5,"hearts"),Card(6,"spades")])
+    deck4 = Deck(cards=[Card(6,"diamonds"),Card(6,"hearts"),Card(5,"hearts")])
+    assert deck1 == deck2
+    assert deck1 == deck3
+    assert deck1 != deck4

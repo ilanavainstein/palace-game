@@ -65,18 +65,20 @@ def test_can_play():
 
 def test_face_up():
     state = new_game(2)
-    pick = state.players[0].hand.cards[2]
+    pick = Deck()
+    for i in range(3):
+        card = state.players[0].hand.cards[i]
+        pick.add(card)
     set_face_up(state,pick)
-    assert len(state.players[0].hand) == 5
+    assert len(state.players[0].hand) == 3
     assert isinstance(state.players[0].face_up,Deck)
-    assert len(state.players[0].face_up) == 1
-    assert state.players[0].face_up.draw() == pick
+    assert len(state.players[0].face_up) == 3
 
 def test_setup_next_turn():
     state = new_game(2)
     pick = Deck()
     for i in range(3):
-        card = state.players[0].hand.cards[0]
+        card = state.players[0].hand.cards[i]
         pick.add(card)
     set_face_up(state,pick)
     assert state.turn == 1
@@ -86,12 +88,12 @@ def test_setup_complete():
     state = new_game(2)
     pick1 = Deck()
     for i in range(3):
-        card = state.players[0].hand.cards[0]
+        card = state.players[0].hand.cards[i]
         pick1.add(card)
     set_face_up(state,pick1)
     pick2 = Deck()
     for i in range(3):
-        card = state.players[1].hand.cards[0]
+        card = state.players[1].hand.cards[i]
         pick2.add(card)
     set_face_up(state,pick2)
     assert state.phase == "play"
@@ -100,12 +102,12 @@ def test_setup_complete_num():
     state = new_game(2)
     pick1 = Deck()
     for i in range(3):
-        card = state.players[0].hand.cards[0]
+        card = state.players[0].hand.cards[i]
         pick1.add(card)
     set_face_up(state,pick1)
     pick2 = Deck()
     for i in range(3):
-        card = state.players[1].hand.cards[0]
+        card = state.players[1].hand.cards[i]
         pick2.add(card)
     set_face_up(state,pick2)
 
@@ -140,3 +142,14 @@ def test_legal_moves():
     moves = legal_moves(state)
     assert len(moves) == 1
 
+def test_legal_moves_setup():
+    state = new_game(2)
+    moves = legal_moves(state)
+    assert len(moves) == 20
+
+def test_play_cards():
+    state = new_game(2)
+    cards = Deck(cards=[state.players[0].hand.cards[0],state.players[0].hand.cards[1]])
+    state.play_cards(cards)
+    assert len(state.players[0].hand) == 4
+    assert len(state.discard_pile) == 2

@@ -35,6 +35,21 @@ class State:
         else:
             return self.discard_pile.cards[-1]
 
+    def play_cards(self,cards):
+        if len(self.players[self.turn].hand) > 0:
+            self.players[self.turn].hand.draw(cards)
+            self.discard_pile.add(cards)
+        elif len(self.players[self.turn].face_up) > 0:
+            self.players[self.turn].face_up.draw(cards)
+            self.discard_pile.add(cards)
+        elif len(self.players[self.turn].face_down) > 0:
+            self.players[self.turn].face_down.draw(cards)
+            self.discard_pile.add(cards)
+        else:
+            raise ValueError("game over")
+
+        
+
 def new_game(num_players):
     if num_players not in range(2,5):
         raise ValueError("must be between 2 - 4 players")
@@ -56,16 +71,15 @@ def new_game(num_players):
 
     return State(players, full_deck)
 
-def set_face_up(state,pick):
+def set_face_up(state,pick): # pick must be a deck, should have 3 cards
     player = state.turn
     if state.phase != "setup":
         raise ValueError("not in setup")
+    moves = legal_moves(state)
+    if pick not in moves:
+        raise ValueError("not an option")
     hand = state.players[player].hand
     face_up = state.players[player].face_up
-    if len(face_up) == 3:
-        raise ValueError("face-up full")
-    if any(i not in hand.cards for i in pick.cards):
-        raise ValueError("at least one card not an option")
     hand.draw(pick)
     face_up.add(pick)
     
@@ -112,4 +126,27 @@ def legal_moves(state):
            for combo in itertools.combinations(repeat,j):
                moves.append(Deck(list(combo)))
     return moves
+
+def play(state,pick):
+    if state.phase != "play":
+        raise ValueError("not in play")
+    if state.winner is not None:
+        raise ValueError("game over")
+    moves = legal_moves(state)
+    if isinstance(pick,Card):
+        pick = Deck(cards=[pick])
+    if pick not in moves:
+        raise ValueError("not a valid move")
+    state.play_cards(pick)
+
+    # special cases
+    if pick.cards[0].number == 2:
+        return
+    if pick.cards[0].number == 10:
+        state.bomb_pile.add(state.discard_pile)
+        state.discard_pile.draw(state.discard_pile)
+        return
+    repeats = state.discard_pile.repeats
+    
+    
     
